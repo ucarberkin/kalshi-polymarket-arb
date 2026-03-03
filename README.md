@@ -1,12 +1,14 @@
 # kalshi-polymarket-arb
 
-Real-time arbitrage detector across two prediction market platforms — [Kalshi](https://kalshi.com) and [Polymarket](https://polymarket.com). Maintains live orderbooks for both platforms via WebSocket and checks for cross-platform mispricings on the same underlying event.
+Real-time arbitrage detector across two prediction market platforms: [Kalshi](https://kalshi.com) and [Polymarket](https://polymarket.com). Maintains live orderbooks for both platforms via WebSocket and checks for cross-platform mispricings on the same underlying event.
 
 ## How it works
 
-Prediction markets price binary outcomes (YES/NO) between $0 and $1. If the same event is listed on two platforms, the combined cost of buying complementary positions should be ≥ $1. When it isn't, there's a risk-free profit.
+If the same event is listed on two platforms, and the combined cost of buying complementary positions is under $1, then there is potential risk-free profit. The profit is further determined by the fee structure whose function is explicitly stated on [Kalshi documentation](https://kalshi.com/docs/kalshi-fee-schedule.pdf) and whose percentage is stated on [Polymarket](https://docs.polymarket.com/trading/fees), the latter of which is basically non-existent.
 
-The arbitrage checker monitors four strategies per market pair (**note that Team2-YES is equivalent to Team1-NO on Polymarket but not on Kalshi**):
+The framework here incorporates fee-free monitoring: every pair that is monitored (pairs defined below) is identified by how much it differs from one dollar, in cent value. If the monitor shows -$0.03, for example, that is a 3c loss. And vice versa for positive values. The modularity of the framework allows (and welcomes) fee-function integration.
+
+The following are the four cross-platform pairs (**note that Team2-YES is equivalent to Team1-NO on Polymarket but not on Kalshi**):
 
 | Strategy | Buy | Buy |
 |----------|-----|-----|
