@@ -6,14 +6,14 @@ Real-time arbitrage detector across two prediction market platforms — [Kalshi]
 
 Prediction markets price binary outcomes (YES/NO) between $0 and $1. If the same event is listed on two platforms, the combined cost of buying complementary positions should be ≥ $1. When it isn't, there's a risk-free profit.
 
-The arbitrage checker monitors four strategies per market pair:
+The arbitrage checker monitors four strategies per market pair (**note that Team2-YES is equivalent to Team1-NO on Polymarket but not on Kalshi**):
 
 | Strategy | Buy | Buy |
 |----------|-----|-----|
-| 1 | Polymarket YES | Kalshi NO |
-| 2 | Polymarket NO | Kalshi YES |
-| 3 | Polymarket Team1-YES | Kalshi Team2-YES |
-| 4 | Polymarket Team1-NO | Kalshi Team2-NO |
+| 1 | Polymarket Team1-YES | Kalshi Team1-NO |
+| 2 | Polymarket Team1-YES | Kalshi Team2-YES |
+| 3 | Polymarket Team2-YES | Kalshi Team2-NO |
+| 4 | Polymarket Team2-YES | Kalshi Team1-YES |
 
 Each platform streams orderbook updates via WebSocket. The checker subscribes to both, maintains the full orderbook state in memory, and evaluates all four strategies on every update.
 
@@ -67,4 +67,4 @@ Update the `TICKERS` list at the top of each script to the markets you want to w
 
 - Kalshi prices are in cents (1–99), Polymarket in decimals (0.01–0.99) — the checker normalizes both to decimals before comparison
 - Orderbook deltas fire on any book change (new order, cancel, fill) — not just trades
-- The checker prints to stdout on every update; wire in your own execution logic to act on opportunities
+- The checker prints to stdout on every update; wire in your own execution logic to act on opportunities (including wiring fee structure)
