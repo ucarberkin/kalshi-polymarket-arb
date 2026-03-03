@@ -1,0 +1,15 @@
+# Build artifacts
+**/__pycache__
+.venv
+
+# Data
+polymarket_raw_data/
+polymarket_processed_data/
+*.parquet
+
+# Sensitive files
+*.pem
+kalshi_api.txt
+
+# OS
+.DS_Store
