@@ -1,5 +1,5 @@
 """
-Kalshi orderbook WebSocket client - COPIED FROM WORKING kalshi_realtime_orderbook.py
+Kalshi orderbook WebSocket client
 """
 import time
 import base64
@@ -7,6 +7,10 @@ import asyncio
 import json
 import threading
 import websockets
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
+
 from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.primitives.asymmetric import padding
 from collections import defaultdict
@@ -54,8 +58,6 @@ def process_orderbook_snapshot(data):
 
     if not ticker:
         return
-
-    print(f"[Kalshi DEBUG] Snapshot for {ticker}: {len(msg.get('yes', []))} YES, {len(msg.get('no', []))} NO")
 
     # Clear and rebuild orderbook
     orderbooks[ticker]["yes"] = {}
@@ -128,17 +130,16 @@ async def connect(tickers):
         async with websockets.connect(WS_HOST + WS_PATH, additional_headers=ws_headers()) as ws:
             print("[Kalshi] Connected")
 
-            # Subscribe to orderbook deltas for each ticker
-            for ticker in tickers:
-                subscription = {
-                    "id": 1,
-                    "cmd": "subscribe",
-                    "params": {
-                        "channels": ["orderbook_delta"],
-                        "market_ticker": ticker
-                    }
+            # Subscribe to orderbook deltas for all tickers in one message
+            subscription = {
+                "id": 1,
+                "cmd": "subscribe",
+                "params": {
+                    "channels": ["orderbook_delta"],
+                    "market_tickers": tickers
                 }
-                await ws.send(json.dumps(subscription))
+            }
+            await ws.send(json.dumps(subscription))
 
             print(f"[Kalshi] Subscribed to {len(tickers)} ticker(s)")
 

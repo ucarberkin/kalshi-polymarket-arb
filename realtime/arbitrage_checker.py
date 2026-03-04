@@ -17,12 +17,12 @@ from orderbook.Kalshi import kalshi_orderbook as kalshi
 # Replace asset IDs with current events you want to observe/compare
 
 # Kalshi
-KALSHI_TICKER_TEAM1 = "KXATPMATCH-25NOV13ALCMUS-MUS"  # Team 1 (both YES/NO incorporated in toked id)
-KALSHI_TICKER_TEAM2 = "KXATPMATCH-25NOV13ALCMUS-ALC"  # Team 2 (both YES/NO incorporated in token id)
+KALSHI_TICKER_TEAM1 = "kxnbagame-26mar03detcle-det".upper()  # Team 1 (both YES/NO incorporated in toked id)
+KALSHI_TICKER_TEAM2 = "kxnbagame-26mar03detcle-cle".upper()  # Team 2 (both YES/NO incorporated in token id)
 
 #Polymarket
-POLYMARKET_TOKEN_TEAM1_YES = "109655595673465428127666548452578838950869771961951026203723659164608814828397"  # Team 1 YES
-POLYMARKET_TOKEN_TEAM1_NO = "86766168983643909333450861052975891736916487440642104341701077325121587506421"  # Team 1 NO (equivalent to Team 2 YES on Polymarket)
+POLYMARKET_TOKEN_TEAM1_YES = "109081243913383015615425037992636571273513271639233491652524900113026919029196"  # Team 1 YES
+POLYMARKET_TOKEN_TEAM1_NO = "32032245236655318400797290255881067171693430317457825461889587709601561202503"  # Team 1 NO (equivalent to Team 2 YES on Polymarket)
 
 
 def check_arbitrage():

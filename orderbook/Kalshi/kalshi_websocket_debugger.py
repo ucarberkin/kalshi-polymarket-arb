@@ -2,6 +2,10 @@
 Simple WebSocket client for Kalshi.
 Subscribes to orderbook deltas and displays all messages.
 """
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
+
 import time, base64, asyncio, websockets, json
 from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.primitives.asymmetric import padding
@@ -10,9 +14,10 @@ from config_paths import read_secret_text, read_secret_bytes
 # Configuration
 # Replace with active Kalshi market tickers (find them at kalshi.com/markets)
 TICKERS = [
-    "[insert slug1]",
-    "[insert slug2]"
+    "kxnbagame-26mar03detcle-det",
+    "kxnbagame-26mar03detcle-cle"
 ]
+TICKERS = [t.upper() for t in TICKERS]
 
 # Kalshi API
 WS_HOST = "wss://api.elections.kalshi.com"
@@ -48,19 +53,18 @@ async def connect():
     async with websockets.connect(WS_HOST + WS_PATH, additional_headers=ws_headers()) as ws:
         print("Connected to Kalshi WebSocket")
 
-        # Subscribe to all available channels for each ticker
+        # Subscribe to all available channels for all tickers in one message
         # Available: ticker, orderbook_delta
-        for ticker in TICKERS:
-            subscription = {
-                "id": 1,
-                "cmd": "subscribe",
-                "params": {
-                    "channels": ["ticker", "orderbook_delta"],
-                    "market_ticker": ticker
-                }
+        subscription = {
+            "id": 1,
+            "cmd": "subscribe",
+            "params": {
+                "channels": ["ticker", "orderbook_delta"],
+                "market_tickers": TICKERS
             }
-            await ws.send(json.dumps(subscription))
-            print(f"Subscribed to: {ticker}")
+        }
+        await ws.send(json.dumps(subscription))
+        print(f"Subscribed to: {TICKERS}")
 
         print("\nReceiving messages (Ctrl+C to stop)...\n")
 

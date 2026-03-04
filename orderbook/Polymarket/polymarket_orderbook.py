@@ -1,6 +1,5 @@
 """
-Polymarket orderbook WebSocket client - reusable module.
-Maintains real-time orderbook state for specified assets.
+Polymarket orderbook WebSocket client
 """
 import json
 import threading

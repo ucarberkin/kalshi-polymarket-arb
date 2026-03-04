@@ -2,6 +2,10 @@
 Real-time orderbook viewer for Kalshi.
 Maintains and displays orderbook state with each update.
 """
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 import time, base64, asyncio, websockets, json
 from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.primitives.asymmetric import padding
@@ -11,9 +15,10 @@ from config_paths import read_secret_text, read_secret_bytes
 # Configuration
 # Replace with active Kalshi market tickers (find them at kalshi.com/markets)
 TICKERS = [
-    "[insert slug1]",
-    "[insert slug2]"
+    "kxnbagame-26mar03detcle-det",
+    "kxnbagame-26mar03detcle-cle"
 ]
+TICKERS = [t.upper() for t in TICKERS]
 
 # Kalshi API
 WS_HOST = "wss://api.elections.kalshi.com"
@@ -82,19 +87,20 @@ def process_orderbook_delta(data):
     if not ticker:
         return
 
-    # Process yes side deltas
-    for price, size in msg.get("yes", []):
-        if size == 0:
-            orderbooks[ticker]["yes"].pop(price, None)  # Remove level
-        else:
-            orderbooks[ticker]["yes"][price] = size  # Update level
+    price = msg.get("price")
+    delta = msg.get("delta")
+    side = msg.get("side")
 
-    # Process no side deltas
-    for price, size in msg.get("no", []):
-        if size == 0:
-            orderbooks[ticker]["no"].pop(price, None)  # Remove level
-        else:
-            orderbooks[ticker]["no"][price] = size  # Update level
+    if price is None or delta is None or side not in ["yes", "no"]:
+        return
+
+    current_size = orderbooks[ticker][side].get(price, 0)
+    new_size = current_size + delta
+
+    if new_size <= 0:
+        orderbooks[ticker][side].pop(price, None)
+    else:
+        orderbooks[ticker][side][price] = new_size
 
     print(f"\n{'='*80}")
     print(f"ORDERBOOK UPDATE: {ticker}")
@@ -143,18 +149,17 @@ async def connect():
     async with websockets.connect(WS_HOST + WS_PATH, additional_headers=ws_headers()) as ws:
         print("Connected to Kalshi WebSocket")
 
-        # Subscribe to orderbook deltas for each ticker
-        for ticker in TICKERS:
-            subscription = {
-                "id": 1,
-                "cmd": "subscribe",
-                "params": {
-                    "channels": ["orderbook_delta"],
-                    "market_ticker": ticker
-                }
+        # Subscribe to orderbook deltas for all tickers in one message
+        subscription = {
+            "id": 1,
+            "cmd": "subscribe",
+            "params": {
+                "channels": ["orderbook_delta"],
+                "market_tickers": TICKERS
             }
-            await ws.send(json.dumps(subscription))
-            print(f"Subscribed to: {ticker}")
+        }
+        await ws.send(json.dumps(subscription))
+        print(f"Subscribed to: {TICKERS}")
 
         print("\nReceiving and processing orderbook updates (Ctrl+C to stop)...\n")
 

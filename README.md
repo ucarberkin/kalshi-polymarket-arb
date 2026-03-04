@@ -6,7 +6,7 @@ Real-time arbitrage detector across two prediction market platforms: [Kalshi](ht
 
 If the same event is listed on two platforms, and the combined cost of buying complementary positions is under $1, then there is potential risk-free profit. The profit is further determined by the fee structure whose function is explicitly stated on [Kalshi documentation](https://kalshi.com/docs/kalshi-fee-schedule.pdf) and whose percentage is stated on [Polymarket](https://docs.polymarket.com/trading/fees), the latter of which is basically non-existent.
 
-The framework here incorporates fee-free monitoring: every pair that is monitored (pairs defined below) is identified by how much it differs from one dollar, in cent value. If the monitor shows -$0.03, for example, that is a 3c loss. And vice versa for positive values. The modularity of the framework allows (and welcomes) fee-function integration.
+The framework here incorporates fee-free monitoring including tradable size: every pair that is monitored (pairs defined below) is identified by how much it differs from one dollar, in cent value. If the monitor shows -$0.03, for example, that is a 3c loss. And vice versa for positive values. All opportunities are reported with the number of contracts one can trade on, which takes the minimum tradable contract size for each respective pair. The modularity of the framework allows (and welcomes) fee-function integration.
 
 The following are the four cross-platform pairs (**note that Team2-YES is equivalent to Team1-NO on Polymarket but not on Kalshi**):
 
